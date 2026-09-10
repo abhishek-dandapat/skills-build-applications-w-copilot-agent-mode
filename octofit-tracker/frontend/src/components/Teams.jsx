@@ -2,13 +2,16 @@ import { useEffect, useState } from 'react'
 
 const getApiBaseUrl = () => {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME
+  const codespaceBaseUrl = typeof codespaceName === 'string' && codespaceName.trim()
+    ? `https://${codespaceName.trim()}-8000.app.github.dev`
+    : 'http://localhost:8000'
 
-  if (typeof codespaceName === 'string' && codespaceName.trim()) {
-    return `https://${codespaceName.trim()}-8000.app.github.dev`
-  }
-
-  return 'http://localhost:8000'
+  return codespaceBaseUrl
 }
+
+const apiUrl = import.meta.env.VITE_CODESPACE_NAME
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/teams/`
+  : 'http://localhost:8000/api/teams/'
 
 const buildApiUrl = (path) => new URL(path, `${getApiBaseUrl()}/`).toString()
 
@@ -46,7 +49,7 @@ function Teams() {
 
     async function fetchTeams() {
       try {
-        const response = await fetch(buildApiUrl('/api/teams/'))
+        const response = await fetch(apiUrl)
         const payload = await response.json()
 
         if (!response.ok) {
